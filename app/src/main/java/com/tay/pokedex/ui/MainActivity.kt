@@ -1,5 +1,6 @@
 package com.tay.pokedex.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
 import android.os.Bundle
@@ -9,30 +10,33 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.tay.pokedex.R
 import com.tay.pokedex.databinding.ActivityMainBinding
 import com.tay.pokedex.ui.adapter.PagingAdapter
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
+    private val adapter = PagingAdapter {
+        val intent = Intent(this, DetailActivity::class.java).apply {
+            putExtra(Intent.EXTRA_USER, it)
+        }
+        startActivity(intent)
+    }
 
-    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding : ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val pokedexAdapter = PagingAdapter()
         binding.rvMain.let {
-            it.adapter = pokedexAdapter
+            it.adapter = adapter
             it.layoutManager = GridLayoutManager(this, 2)
         }
 
-        fetchPokemons(adapter = pokedexAdapter)
+        fetchPokemons()
     }
 
-    private fun fetchPokemons(adapter: PagingAdapter) {
+    private fun fetchPokemons() {
         lifecycleScope.launch {
             viewModel.fetchPokemons().distinctUntilChanged().collectLatest {
                 adapter.submitData(it)

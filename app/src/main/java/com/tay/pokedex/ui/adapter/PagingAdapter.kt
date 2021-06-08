@@ -11,7 +11,9 @@ import com.tay.pokedex.BR
 import com.tay.pokedex.R
 import com.tay.pokedex.model.Pokemon
 
-class PagingAdapter : PagingDataAdapter<Pokemon, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
+class PagingAdapter(
+    private val onClick: (Pokemon) -> Unit
+) : PagingDataAdapter<Pokemon, RecyclerView.ViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Pokemon>() {
@@ -32,18 +34,25 @@ class PagingAdapter : PagingDataAdapter<Pokemon, RecyclerView.ViewHolder>(DIFF_C
         val binding = DataBindingUtil
             .inflate<ViewDataBinding>(layoutInflater, viewType, parent, false)
 
-        return PagingViewHolder(binding)
+        return PagingViewHolder(binding, onClick)
     }
 
     override fun getItemViewType(position: Int) = R.layout.item_pokedex
 
-    class PagingViewHolder(private val binding: ViewDataBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class PagingViewHolder(
+        private val binding: ViewDataBinding,
+        val onClick: (Pokemon) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Pokemon?) {
             binding.setVariable(BR.item, item)
             binding.executePendingBindings()
-        }
 
+            binding.root.setOnClickListener {
+                item?.let {
+                    onClick(it)
+                }
+            }
+        }
     }
 }
