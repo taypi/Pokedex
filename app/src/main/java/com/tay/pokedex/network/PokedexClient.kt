@@ -1,5 +1,6 @@
 package com.tay.pokedex.network
 
+import com.tay.pokedex.model.PokemonDetail
 import com.tay.pokedex.model.PokemonResponse
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -20,6 +21,10 @@ class PokedexClient {
             limit = PAGING_SIZE,
             offset = page * PAGING_SIZE
         )
+
+    suspend fun fetchPokemonDetail(
+        name: String
+    ): PokemonDetail = pokedexService.fetchPokemonDetail(name)
 
     companion object {
         const val PAGING_SIZE = 30

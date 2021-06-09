@@ -18,4 +18,8 @@ class Repository(context: Context) {
     ) {
         pokedexDb.pokemonDao().fetchPagingSource()
     }.flow
+
+    suspend fun pokemonDetail(
+        name: String
+    ) = pokedexClient.fetchPokemonDetail(name)
 }
